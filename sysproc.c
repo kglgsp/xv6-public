@@ -14,7 +14,7 @@ sys_fork(void)
 }
 
 int
-sys_exit(int)
+sys_exit(void)
 {
   exit();
   return 0;  // not reached
