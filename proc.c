@@ -305,6 +305,14 @@ int waitpid(int pid, int* status, int options)
       }
     }
 
+    if(!havekids ||curproc->killed) {
+     release(&ptable.lock);
+     if(status)
+      *status = -1;
+     return -1;       
+    }
+    sleep(curproc, &ptable.lock);
+  }
 }
 
 int
