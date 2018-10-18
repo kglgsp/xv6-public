@@ -1397,7 +1397,7 @@ forktest(void)
 
   if(n == 1000){
     printf(1, "fork claimed to work 1000 times!\n");
-    exit(&status);
+    exit();
   }
 
   for(; n > 0; n--){
@@ -1421,6 +1421,7 @@ sbrktest(void)
   int fds[2], pid, pids[10], ppid;
   char *a, *b, *c, *lastaddr, *oldbrk, *p, scratch;
   uint amt;
+  int status;
 
   printf(stdout, "sbrk test\n");
   oldbrk = sbrk(0);

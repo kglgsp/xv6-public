@@ -16,18 +16,18 @@ sys_fork(void)
 int
 sys_exit(void)
 {
-
+ 
 
   exit();
   return 0;  // not reached
 }
 
 int
-sys_wait(int*)
+sys_wait(int* status)
 {
-  int* status;
+  
   argptr(0,(char**) &status, sizeof(int*));
-  return wait(&status);
+  return wait(status);
 }
 
 int
