@@ -277,7 +277,7 @@ int waitpid(int pid, int* status, int options)
   struct proc *p;
   int havekids;
   struct proc *curproc = myproc();
-  int waitpid_parentindex;
+
   
   acquire(&ptable.lock);
   for(;;){
