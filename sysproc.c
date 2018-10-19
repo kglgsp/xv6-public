@@ -27,9 +27,17 @@ sys_exit()
 int
 sys_wait(int* status)
 {
-  
+   
   argptr(0,(char**) &status, sizeof(int*));
   return wait(status);
+}
+
+int
+sys_waitpid(int pid, int* status, int options)
+{
+  argptr(0,(char**) &status, sizeof(int*));
+  return waitpid(pid, status, options);
+
 }
 
 int
