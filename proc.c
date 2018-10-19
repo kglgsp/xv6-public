@@ -277,13 +277,14 @@ int waitpid(int pid, int* status, int options)
   struct proc *p;
   int havekids;
   struct proc *curproc = myproc();
+  int waitpid_parentindex;
   
   acquire(&ptable.lock);
   for(;;){
     // Scan through table looking for exited children.
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->parent != curproc)
+      if(p->pid != pid)
         continue;
       havekids = 1;
       if(p->state == ZOMBIE){
@@ -295,8 +296,8 @@ int waitpid(int pid, int* status, int options)
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
-       // p->killed = 0;
-       // p->state = UNUSED;
+        p->killed = 0;
+        p->state = UNUSED;
 	if(status)
 		*status = p->exitstatus;
 
@@ -339,7 +340,7 @@ wait(int* status)
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
-       // p->killed = 0;
+        p->killed = 0;
        // p->state = UNUSED;
 	if(status)
 		*status = p->exitstatus;
