@@ -24,18 +24,21 @@ sys_exit()
   return 0;  // not reached
 }
 
+
 int
 sys_wait(int* status)
 {
    
-  argptr(0,(char**) &status, sizeof(int*));
+  argptr(0,(void *) &status, sizeof(int));
   return wait(status);
 }
 
 int
 sys_waitpid(int pid, int* status, int options)
 {
-  argptr(0,(char**) &status, sizeof(int*));
+  argint(0, &pid);
+  argptr(1,(void *) &status, sizeof(int));
+  argint(2, &options);
   return waitpid(pid, status, options);
 
 }
