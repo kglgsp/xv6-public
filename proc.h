@@ -50,6 +50,8 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int exitstatus;
+
+  int priority;
 //  int waitpid_parent[100];
 //  int waitpid_parentindex;
 };
