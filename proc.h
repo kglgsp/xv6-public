@@ -52,8 +52,8 @@ struct proc {
   int exitstatus;
 
   int priority;
-//  int waitpid_parent[100];
-//  int waitpid_parentindex;
+
+
 };
 
 // Process memory is laid out contiguously, low addresses first:
