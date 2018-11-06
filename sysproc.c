@@ -44,7 +44,7 @@ sys_waitpid(int pid, int* status, int options)
 }
 
 int 
-sys_priority(int priority)
+sys_setpriority(int priority)
 {
 
   argint(0,&priority);
