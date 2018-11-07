@@ -52,12 +52,6 @@ mycpu(void)
   panic("unknown apicid\n");
 }
 
-// Disable interrupts so that we are not reschedulescheduler, never to return.
-  curproc->state = ZOMBIE;
-  sched();
-  panic("zombie exit");
-}
-
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
 
@@ -326,6 +320,14 @@ exit(int status)
         wakeup1(initproc);
     }
   }
+// Disable interrupts so that we are not reschedulescheduler, never to return.
+  curproc->state = ZOMBIE;
+  sched();
+  panic("zombie exit");
+}
+
+
+
    // Jump into the scheduler, never to return.
 
 //PAGEBREAK: 42
@@ -347,9 +349,6 @@ int setpriority(int p)
   struct cpu *c = mycpu();
   c->proc->priority = p;
   return p; //passed
-
-
-  return -1;
 }
 
 void
@@ -381,7 +380,7 @@ scheduler(void)
       highestP = p;
       
       for(p1 = ptable.proc; p1< &ptable.proc[NPROC];p1++){
-	if(p1>state != RUNNABLE)
+	if(p1->state != RUNNABLE)
 	  continue;
 	if(highestP->priority < p1->priority)
 	  highestP = p1;
