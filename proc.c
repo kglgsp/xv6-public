@@ -184,6 +184,8 @@ allocproc(void)
  found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  setpriority(p->pid);
+ 
    release(&ptable.lock);
    // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
