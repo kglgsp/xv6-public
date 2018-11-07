@@ -40,6 +40,6 @@ void free(void*);
 int atoi(const char*);
 
 //scheduler
-int priority(int);
+int setpriority(int);
 int getpriority(int);
 
