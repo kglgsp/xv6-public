@@ -343,6 +343,18 @@ exit(int status)
 //ideally we want the priority in terms of the most important processes
 //how do we identify?
 //we will give priority to first process made instead
+//
+int getpriority(int pid)
+{
+  struct proc* p;
+  for(p = ptable.proc; &ptable.proc[NPROC]; p++){
+    if(p->pid == pid)
+	return p->priority
+  }
+  return -1;
+
+
+}
 int setpriority(int p)
 {
 //  struct cpu *c;
