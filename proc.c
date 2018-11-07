@@ -179,7 +179,7 @@ allocproc(void)
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->priority = 20;
- 
+  p->timeElapsed = ticks;
    release(&ptable.lock);
    // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -367,11 +367,13 @@ scheduler(void)
   struct proc *highestP;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+  uint currentTick;
 
   //priority ranges 0-31 where 0 is the highest priority
 
   for(;;){
+    
+    currentTick = ticks; //get the current time elapsed
   //  printf("IN HERE");
     // Enable interrupts on this processor.
     sti();
@@ -389,6 +391,9 @@ scheduler(void)
       highestP = p;
       
       for(p1 = ptable.proc; p1< &ptable.proc[NPROC];p1++){
+	if(currentTick - p1->timeElapsed >= 20,000,000)
+		p1->priority = p1->priority - 1;
+
 	if(p1->state != RUNNABLE)
 	  continue;
 	if(highestP->priority > p1->priority)

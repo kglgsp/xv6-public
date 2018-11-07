@@ -52,7 +52,7 @@ struct proc {
   int exitstatus;
 
   int priority;
-
+  int timeElapsed;
 
 };
 
