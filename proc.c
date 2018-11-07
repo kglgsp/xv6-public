@@ -184,7 +184,7 @@ allocproc(void)
  found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  setpriority(p->pid);
+  p->priority = setpriority(20);
  
    release(&ptable.lock);
    // Allocate kernel stack.
@@ -341,31 +341,15 @@ exit(int status)
 //ideally we want the priority in terms of the most important processes
 //how do we identify?
 //we will give priority to first process made instead
-int setpriority(int pid)
+int setpriority(int p)
 {
-  /*
- *
- * How to use setpriority(int)
- *
- * Steps:
- * when we create process -> we set the priority by giving it the pid 
- * we look through index of the process table and we find the highest priority
- */
- struct proc *theProcess = NULL;
- int max_priority = -1;
- for(p = ptable.proc; p < .&ptable.proc[NPROC];p++){
-   if(max_priority < p->priority)
-	max_priority = p->priority
-   if(p->pid == pid)
-	theProcess = p;
- }
- if(theProcess == NULL)
-	return -1;
- if(max_priority < 31) 
-	theProcess->priority = max_priority + 1;
- else
-	theProcess->priority = 31;
- return 0;
+  struct proc* process;
+  struct cpu *c = mycpu();
+  c->proc->priority = p;
+  return p; //passed
+
+
+  return -1;
 }
 
 void
@@ -374,10 +358,13 @@ scheduler(void)
 //assuming priority for each process has already been maded
 
   struct proc *p; //process we want to start
+  struct proc *p1;
+  struct proc *highestP;
   struct cpu *c = mycpu();
   c->proc = 0;
+
   //priority ranges 0-31 where 0 is the highest priority
-  int last_priority = 32;
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -387,12 +374,21 @@ scheduler(void)
 
     //goes through each process in "process table" 64 (value of NPROC) times
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      
+ 
       //if there is no process in this index, then ignore it and move on
       if(p->state != RUNNABLE)
         continue;
-      if(p->priority < last_priority) //if the priority of p is less than the last priority, then we continue
-	continue;
+      highestP = p;
+      
+      for(p1 = ptable.proc; p1< &ptable.proc[NPROC];p1++){
+	if(p1>state != RUNNABLE)
+	  continue;
+	if(highestP->priority < p1->priority)
+	  highestP = p1;
+      }
+      p = highestP;
+//      if(p->priority < last_priority) //if the priority of p is less than the last priority, then we continue
+//	continue;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -406,6 +402,7 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+     
     }
     release(&ptable.lock);
 
