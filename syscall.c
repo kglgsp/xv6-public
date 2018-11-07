@@ -104,7 +104,7 @@ extern int sys_wait(void);
 extern int sys_waitpid(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
-
+extern int sys_getpriority(int);
 extern int sys_setpriority(void);
 
 static int (*syscalls[])(void) = {

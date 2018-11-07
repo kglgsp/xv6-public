@@ -41,5 +41,5 @@ int atoi(const char*);
 
 //scheduler
 int priority(int);
-
+int getpriority(int);
 
