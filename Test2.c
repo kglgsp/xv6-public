@@ -113,25 +113,21 @@ int waitPid(void){
    // printf(1, "\n  Step 2: The parent processes will switch to priority 0\n");
       printf(1, "\n Step 1: Test Aging\n");
       setpriority(0);
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 5; i++) {
 	pid = fork();
 	if (pid > 0 ) {
 		continue;}
 	else if ( pid == 0) {
-//		printf(1, "\n Hello! this is child# %d and I will change my priority to %d \n",getpid(),60-20*i);
-		if (i == 9) {
-			setpriority(60);
-			curr_pid = pid;
-		}	
-		else {
-			setpriority(5);
-		}
+	printf(1, "\n Created child# %d with initial priority to %d \n",getpid(),30-1*i);
+		 
+		setpriority(30 - 1*i);	
 
 		
 		for (j=0;j<50000;j++) {
 			for(k=0;k<10000;k++) {
 				asm("nop"); }}
-		printf(1, "\n child# %d with priority %d has finished! \n",curr_pid, getpriority(curr_pid));		
+		printf(1, "\n child# %d with priority %d has finished! \n",getpid(), getpriority(getpid()));
+//		printf(1, "\n child# %d is now priority %d \n",curr_pid, getpriority(curr_pid));		
 		exit(0);
         }
         else {
@@ -141,7 +137,7 @@ int waitPid(void){
 	}
 
 	if(pid > 0) {
-		for (i = 0; i <  3; i++) {
+		for (i = 0; i <  5; i++) {
 			ret_pid = wait(&exit_status);
 			//printf(1,"\n This is the parent: child with PID# %d has finished with status %d \n",ret_pid,exit_status);
 			}

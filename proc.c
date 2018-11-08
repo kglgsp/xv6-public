@@ -403,8 +403,8 @@ scheduler(void)
       highestP = p;
       
       for(p1 = ptable.proc; p1< &ptable.proc[NPROC];p1++){
-	if(currentTick - p1->timeElapsed >= 20000000)
-		p1->priority = p1->priority - 1;
+	if(currentTick - p1->timeElapsed >= 500000)
+		p1->priority = p1->priority -1;
 
 	if(p1->state != RUNNABLE)
 	  continue;
