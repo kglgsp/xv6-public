@@ -1,3 +1,4 @@
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -63,7 +64,7 @@ int waitpid(int pid, int* status, int options)
   int havekids;
   struct proc *curproc = myproc();
 
-  
+  curproc->waitPoint= ticks;
   acquire(&ptable.lock);
   for(;;){
     // Scan through table looking for exited children.
@@ -71,7 +72,7 @@ int waitpid(int pid, int* status, int options)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->pid != pid)
         continue;
-      havekids = 1;
+        havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
         pid = p->pid;
@@ -83,6 +84,7 @@ int waitpid(int pid, int* status, int options)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+       
 	if(status)
 		*status = p->exitstatus;
 
@@ -98,6 +100,7 @@ int waitpid(int pid, int* status, int options)
      return -1;       
     }
     sleep(curproc, &ptable.lock);
+
   }
 }
 
@@ -108,8 +111,10 @@ wait(int* status)
   int havekids, pid;
   struct proc *curproc = myproc();
   
+  curproc->waitPoint = ticks;
   acquire(&ptable.lock);
   for(;;){
+    
     // Scan through table looking for exited children.
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -126,6 +131,7 @@ wait(int* status)
         p->parent = 0;
         p->name[0] = 0;
         p->killed = 0;
+
        // p->state = UNUSED;
 	if(status)
 		*status = p->exitstatus;
@@ -180,6 +186,7 @@ allocproc(void)
   p->pid = nextpid++;
   p->priority = 20;
   p->timeElapsed = ticks;
+  p->waitTime = 0;
    release(&ptable.lock);
    // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -320,7 +327,15 @@ exit(int status)
         wakeup1(initproc);
     }
   }
+  curproc->timeFinished = ticks;
 // Disable interrupts so that we are not reschedulescheduler, never to return.
+  uint turnAround = curproc->timeFinished - curproc->timeElapsed;
+  
+  
+  cprintf("Exiting process %d with turnaround (%d) and waitTime (%d) \n", curproc->pid, turnAround,curproc->waitTime);
+
+
+
   curproc->state = ZOMBIE;
   sched();
   panic("zombie exit");
@@ -540,8 +555,10 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
-      p->state = RUNNABLE;
+    if(p->state == SLEEPING && p->chan == chan){
+         p->waitTime += ticks - p->waitPoint;
+	 p->state = RUNNABLE;
+    }
 }
 
 // Wake up all processes sleeping on chan.
@@ -549,6 +566,7 @@ void
 wakeup(void *chan)
 {
   acquire(&ptable.lock);
+  
   wakeup1(chan);
   release(&ptable.lock);
 }
