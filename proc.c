@@ -418,6 +418,7 @@ scheduler(void)
       highestP = p;
       
       for(p1 = ptable.proc; p1< &ptable.proc[NPROC];p1++){
+        //priority aging increases the priorirty of current process
 	if(currentTick - p1->timeElapsed >= 500000)
 		p1->priority = p1->priority -1;
 
