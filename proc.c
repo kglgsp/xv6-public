@@ -271,13 +271,15 @@ fork(void)
   if((np = allocproc()) == 0){
     return -1;
   }
-   // Copy process state from proc.
-  if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
+   // Copy process state from proc
+  cprintf("in fork");
+  if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz, curproc->sp)) == 0){
     kfree(np->kstack);
     np->kstack = 0;
     np->state = UNUSED;
     return -1;
   }
+  cprintf("passed copyuvm test ");
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
@@ -304,7 +306,7 @@ exit(int status)
   struct proc *p;
   int fd;
    if(curproc == initproc)
-    panic("init exiting");
+    panic("PROC init EXITING");
    // Close all open files.
   for(fd = 0; fd < NOFILE; fd++){
     if(curproc->ofile[fd]){
